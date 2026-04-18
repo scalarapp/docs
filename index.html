@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Scalar — Developer Documentation</title>
+<meta name="description" content="Open-source libraries and technical documentation from the Scalar project.">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📚%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>Scalar Developer Docs</h1>
+      <p class="sub">
+        Open-source libraries and technical documentation from the
+        <a href="https://getscalar.org">Scalar</a> project. Built by the
+        same team, battle-tested in production, MIT licensed.
+      </p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section>
+      <h2>Libraries</h2>
+      <div id="library-list" class="grid">
+        <!-- rendered at page load from /libraries.json -->
+      </div>
+    </section>
+
+    <section class="quiet">
+      <h2>More coming</h2>
+      <p>
+        We extract reusable pieces — across Swift, Kotlin, Go, Rust, and
+        TypeScript — as we identify ones that solve problems engineers
+        keep reinventing. Follow
+        <a href="https://github.com/scalarapp">@scalarapp</a> on GitHub
+        to get notified when new ones ship.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <a href="https://github.com/scalarapp">GitHub</a>
+      ·
+      <a href="https://getscalar.org">Scalar messenger</a>
+      ·
+      <a href="https://getscalar.org/privacy">Privacy</a>
+      ·
+      <a href="https://getscalar.org/terms">Terms</a>
+    </div>
+  </footer>
+
+  <script>
+    // Registry → DOM. Keeps the build workflow's job limited to
+    // "aggregate files"; no template engine required. When the layout
+    // grows (guides, changelogs, search) we'll move to server-side
+    // rendering in the workflow.
+    const langClasses = {
+      Swift: "lang-swift",
+      Kotlin: "lang-kotlin",
+      Go: "lang-go",
+      Rust: "lang-rust",
+      TypeScript: "lang-typescript",
+      JavaScript: "lang-javascript",
+      Python: "lang-python"
+    };
+
+    fetch('/libraries.json')
+      .then(r => r.json())
+      .then(data => {
+        const root = document.getElementById('library-list');
+        for (const lib of data.libraries) {
+          const card = document.createElement('a');
+          card.className = 'card';
+          card.href = `/${lib.slug}/`;
+          const langClass = langClasses[lib.language] || 'lang-other';
+          card.innerHTML = `
+            <div class="card-head">
+              <h3>${escapeHtml(lib.name)}</h3>
+              <span class="lang ${langClass}">${escapeHtml(lib.language)}</span>
+            </div>
+            <p>${escapeHtml(lib.tagline)}</p>
+            <div class="tags">
+              ${(lib.tags || []).map(t => `<span>${escapeHtml(t)}</span>`).join('')}
+            </div>
+            <div class="link">Read docs →</div>
+          `;
+          root.appendChild(card);
+        }
+      })
+      .catch(err => {
+        document.getElementById('library-list').innerHTML =
+          '<p class="error">Failed to load library list.</p>';
+        console.error(err);
+      });
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[c]));
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,186 @@
+:root {
+    --bg: #0a0a0a;
+    --surface: #141414;
+    --surface-hover: #1b1b1b;
+    --line: #262626;
+    --text: #f2f2f2;
+    --muted: #8a8a8a;
+    --accent: #1DAF8A;
+    --accent-dim: #1DAF8A55;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+header {
+    border-bottom: 1px solid var(--line);
+    padding: 56px 0 40px;
+    margin-bottom: 32px;
+}
+
+header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0 0 8px;
+    letter-spacing: -0.01em;
+}
+
+header .sub {
+    color: var(--muted);
+    font-size: 16px;
+    margin: 0;
+    max-width: 640px;
+}
+
+main section {
+    margin-bottom: 56px;
+}
+
+main h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-weight: 600;
+    margin: 0 0 16px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 20px 22px;
+    text-decoration: none;
+    color: var(--text);
+    transition: border-color 120ms ease, background 120ms ease, transform 120ms ease;
+}
+
+.card:hover {
+    border-color: var(--accent-dim);
+    background: var(--surface-hover);
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+    gap: 8px;
+}
+
+.card h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text);
+}
+
+/* Language chip — official brand-ish colors at low saturation so they
+   hint at the language without screaming. Same surface as tag chips. */
+.lang {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    background: var(--line);
+    color: var(--muted);
+}
+.lang.lang-swift      { background: #F05138; color: #fff; }
+.lang.lang-kotlin     { background: #7F52FF; color: #fff; }
+.lang.lang-go         { background: #00ADD8; color: #fff; }
+.lang.lang-rust       { background: #CE422B; color: #fff; }
+.lang.lang-typescript { background: #3178C6; color: #fff; }
+.lang.lang-javascript { background: #F7DF1E; color: #000; }
+.lang.lang-python     { background: #3776AB; color: #fff; }
+
+.card p {
+    color: var(--muted);
+    font-size: 14px;
+    margin: 0 0 12px;
+    line-height: 1.5;
+    flex: 1;
+}
+
+.card .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.card .tags span {
+    font-size: 11px;
+    padding: 3px 8px;
+    background: var(--line);
+    color: var(--muted);
+    border-radius: 10px;
+    text-transform: lowercase;
+}
+
+.card .link {
+    font-size: 14px;
+    color: var(--accent);
+    font-weight: 500;
+}
+
+.quiet p {
+    color: var(--muted);
+    max-width: 640px;
+}
+
+.error {
+    color: #ff6b6b;
+}
+
+footer {
+    border-top: 1px solid var(--line);
+    padding: 32px 0;
+    color: var(--muted);
+    font-size: 14px;
+    margin-top: 48px;
+}
+
+footer .wrap {
+    text-align: center;
+}
+
+footer a {
+    color: var(--muted);
+    margin: 0 4px;
+}
+
+footer a:hover {
+    color: var(--accent);
+}
