@@ -59,6 +59,28 @@ jobs:
                 --transform-for-static-hosting \
                 --hosting-base-path "/$slug" \
                 --output-path "../_site/$slug")
+
+            # DocC puts its entry point at /documentation/<target-lowercased>/
+            # and emits nothing at the subpath root. Drop an index.html
+            # redirect so visiting /<slug>/ lands on the docs instead of
+            # Pages' 404 page. Landing-page cards link straight to /<slug>/
+            # for consistency across tools, so this is the single place
+            # we translate to the tool-specific entry.
+            target_lower=$(echo "$target" | tr '[:upper:]' '[:lower:]')
+            cat > "_site/$slug/index.html" <<HTML
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="utf-8">
+            <title>$slug — Scalar docs</title>
+            <meta http-equiv="refresh" content="0; url=/$slug/documentation/$target_lower/">
+            <link rel="canonical" href="/$slug/documentation/$target_lower/">
+          </head>
+          <body>
+            Redirecting to <a href="/$slug/documentation/$target_lower/">$slug documentation</a>…
+          </body>
+          </html>
+          HTML
           done
 
       # ── Placeholder for future builders ───────────────────────────
