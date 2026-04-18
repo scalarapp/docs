@@ -1,0 +1,88 @@
+name: Build docs site
+
+on:
+  push:
+    branches: [main]
+  # Individual library repos fire this when they merge new code.
+  # See e.g. scalarapp/ResumeKit/.github/workflows/docs.yml.
+  repository_dispatch:
+    types: [library-docs-updated]
+  # Belt-and-suspenders: nightly rebuild picks up any lib whose own
+  # workflow forgot to dispatch.
+  schedule:
+    - cron: '17 4 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - name: Checkout docs hub
+        uses: actions/checkout@v4
+        with:
+          path: hub
+
+      - name: Prepare output directory
+        run: mkdir -p _site
+
+      # ── Swift / DocC libraries ────────────────────────────────────
+      # Builds each Swift library whose build.type is `swift-docc`.
+      # Each one is cloned, then `swift package generate-documentation`
+      # produces a static-hosting bundle under _site/<slug>/.
+      - name: Build Swift DocC libraries
+        run: |
+          set -e
+          entries=$(jq -c '.libraries[] | select(.build.type == "swift-docc")' hub/libraries.json)
+          [ -z "$entries" ] && echo "No swift-docc libraries" && exit 0
+          echo "$entries" | while read -r entry; do
+            slug=$(echo "$entry" | jq -r '.slug')
+            repo=$(echo "$entry" | jq -r '.repo')
+            target=$(echo "$entry" | jq -r '.build.target')
+            echo "=== swift-docc: $slug ($repo target=$target) ==="
+
+            rm -rf "src-$slug"
+            git clone --depth 1 "https://github.com/$repo.git" "src-$slug"
+
+            (cd "src-$slug" && \
+              swift package \
+                --allow-writing-to-directory "../_site/$slug" \
+                generate-documentation \
+                --target "$target" \
+                --disable-indexing \
+                --transform-for-static-hosting \
+                --hosting-base-path "/$slug" \
+                --output-path "../_site/$slug")
+          done
+
+      # ── Placeholder for future builders ───────────────────────────
+      # When a Kotlin / Go / Rust / TypeScript library joins the hub,
+      # add a new step filtered on its build.type (kotlin-dokka,
+      # go-doc, rust-doc, typedoc, etc.). Keep each builder in its own
+      # step so tool-specific setup (JDK install, cargo, etc.) doesn't
+      # leak into unrelated library builds.
+
+      - name: Copy landing assets + registry
+        run: |
+          cp -R hub/public/* _site/
+          # Expose the registry to the landing page for client-side
+          # card rendering. The page fetches this JSON and renders the
+          # library list at load time.
+          cp hub/libraries.json _site/libraries.json
+          # Custom domain pin — lives in the publish dir so it survives
+          # every gh-pages push.
+          echo "docs.getscalar.org" > _site/CNAME
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
+          force_orphan: false
+          commit_message: "docs: rebuild (${{ github.event_name }})"

@@ -1,0 +1,17 @@
+{
+  "comment": "Registry of Scalar open-source projects with published docs. Each entry describes where the source lives, how to build its docs, and how to present it on the landing page. The build workflow dispatches on `build.type` so each language/tool can have its own builder without leaking into the hub's core logic.",
+  "libraries": [
+    {
+      "slug": "resumekit",
+      "name": "ResumeKit",
+      "tagline": "Discord-style session-resume client for WebSocket apps.",
+      "language": "Swift",
+      "repo": "scalarapp/ResumeKit",
+      "build": {
+        "type": "swift-docc",
+        "target": "ResumeKit"
+      },
+      "tags": ["websocket", "realtime", "messenger"]
+    }
+  ]
+}
